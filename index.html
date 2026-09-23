@@ -3,60 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>岩芯薄片显微照片索引台</title>
+  <title>岩芯薄片树脂封片准入台</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <main class="shell">
     <header class="mast">
       <div>
-        <p>Petrographic Slide Index</p>
-        <h1>岩芯薄片显微照片索引台</h1>
+        <p>Resin Mounting Admission</p>
+        <h1>岩芯薄片树脂封片准入台</h1>
       </div>
       <button id="exportBtn" type="button">导出观察清单</button>
     </header>
 
+    <div id="banner" class="banner" hidden></div>
+
     <section class="layout">
-      <form id="sampleForm" class="editor">
-        <h2>样本录入</h2>
-        <label>显微照片<input id="photoInput" type="file" accept="image/*"></label>
-        <label>样本编号<input name="code" required placeholder="BX-17-03"></label>
-        <label>采样地点<input name="location" placeholder="剖面东侧第二层"></label>
-        <div class="pair">
-          <label>放大倍数<input name="magnification" placeholder="40x"></label>
-          <label>偏光类型
-            <select name="polarization">
+      <div class="side">
+        <form id="sampleForm" class="editor">
+          <h2>样本录入</h2>
+          <label>显微照片<input id="photoInput" type="file" accept="image/*"></label>
+          <label>样本编号<input name="code" required placeholder="BX-17-03"></label>
+          <label>采样地点<input name="location" placeholder="剖面东侧第二层"></label>
+          <div class="pair">
+            <label>放大倍数<input name="magnification" placeholder="40x"></label>
+            <label>偏光类型
+              <select name="polarization">
+                <option>单偏光</option>
+                <option>正交偏光</option>
+                <option>反射光</option>
+              </select>
+            </label>
+          </div>
+          <label>主要矿物<input name="minerals" placeholder="石英、斜长石、黑云母"></label>
+          <label>颗粒结构<input name="texture" placeholder="半自形粒状、碎裂结构"></label>
+          <label>老师批注<textarea name="comment" rows="3" placeholder="记录鉴定依据或疑点"></textarea></label>
+          <button type="submit">保存样本</button>
+        </form>
+
+        <section class="editor batches">
+          <h2>树脂批次台账</h2>
+          <div id="batchList" class="batch-list"></div>
+          <form id="batchForm" class="batch-form">
+            <div class="pair">
+              <label>批次号<input name="code" placeholder="RX-2027-03" required></label>
+              <label>有效期至<input name="expiry" type="date" required></label>
+            </div>
+            <label>厂商 / 备注<input name="vendor" placeholder="海光树脂 · 标准环氧"></label>
+            <button type="submit">登记批次</button>
+          </form>
+        </section>
+      </div>
+
+      <section class="board">
+        <nav class="tabs">
+          <button type="button" data-tab="list" class="tab active">样本列表</button>
+          <button type="button" data-tab="queue" class="tab">待办队列 <span id="queueCount" class="tab-count">0</span></button>
+          <button type="button" data-tab="history" class="tab">封片履历</button>
+        </nav>
+
+        <div id="pane-list" class="tab-pane">
+          <div class="filters">
+            <input id="mineralFilter" placeholder="按矿物筛选">
+            <select id="polarFilter">
+              <option value="">全部偏光</option>
               <option>单偏光</option>
               <option>正交偏光</option>
               <option>反射光</option>
             </select>
-          </label>
+            <select id="admissionFilter">
+              <option value="">全部准入状态</option>
+              <option value="admitted">仅已准入</option>
+              <option value="unadmitted">仅未准入</option>
+            </select>
+          </div>
+          <div id="sampleGrid" class="sample-grid"></div>
         </div>
-        <label>主要矿物<input name="minerals" placeholder="石英、斜长石、黑云母"></label>
-        <label>颗粒结构<input name="texture" placeholder="半自形粒状、碎裂结构"></label>
-        <label>老师批注<textarea name="comment" rows="4" placeholder="记录鉴定依据或疑点"></textarea></label>
-        <button type="submit">保存样本</button>
-      </form>
 
-      <section class="board">
-        <div class="filters">
-          <input id="mineralFilter" placeholder="按矿物筛选">
-          <select id="polarFilter">
-            <option value="">全部偏光</option>
-            <option>单偏光</option>
-            <option>正交偏光</option>
-            <option>反射光</option>
-          </select>
+        <div id="pane-queue" class="tab-pane" hidden>
+          <div class="queue-columns">
+            <section class="queue-col">
+              <h3>固化中</h3>
+              <div id="queueCuring" class="queue-list"></div>
+            </section>
+            <section class="queue-col">
+              <h3>待检查（隔 12 小时 × 2）</h3>
+              <div id="queueChecking" class="queue-list"></div>
+            </section>
+          </div>
         </div>
-        <div id="sampleGrid" class="sample-grid"></div>
+
+        <div id="pane-history" class="tab-pane" hidden>
+          <div id="historyList" class="history-list"></div>
+        </div>
       </section>
 
-      <aside class="compare">
-        <h2>并排对比</h2>
-        <div id="comparePane" class="compare-pane"></div>
+      <aside class="compare workbench">
+        <h2>封片作业台</h2>
+        <div id="actionPane" class="action-pane"></div>
       </aside>
     </section>
   </main>
+  <script src="./rules.js"></script>
+  <script src="./store.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
